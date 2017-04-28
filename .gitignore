@@ -116,5 +116,5 @@ docs/_build/
 # PyBuilder
 target/
 
-*.sqlite
+*.sqlite3
 dump*
