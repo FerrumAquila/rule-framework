@@ -22,7 +22,7 @@ class AetosModel(TimeStampedModel):
 class Event(AetosModel):
     user_id = models.BigIntegerField()
     source_time = models.DateTimeField()
-    location = models.ForeignKey('Location', related_name='events')
+    location = models.ForeignKey('Location', related_name='events', null=True, blank=True)
     noun = models.CharField(max_length=10)
     verb = models.CharField(max_length=10)
     time_spent = models.PositiveIntegerField()
