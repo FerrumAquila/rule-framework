@@ -1,0 +1,7 @@
+Django==1.9
+django-extensions==1.7.4
+django-model-utils==2.6
+redis==2.10.5
+requests==2.12.3
+aetos-serialiser==1.0.1
+ipython==5.1.0
