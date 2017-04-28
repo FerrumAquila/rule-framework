@@ -116,5 +116,5 @@ docs/_build/
 # PyBuilder
 target/
 
-*.sqlite3
+rule_framework.sqlite3
 dump*
