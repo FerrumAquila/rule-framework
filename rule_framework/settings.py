@@ -122,7 +122,8 @@ INSTALLED_APPS = (
 
     'django_extensions',
 
-    'listener'
+    'listener',
+    'rule_engine'
 )
 
 # A sample logging configuration. The only tangible logging
