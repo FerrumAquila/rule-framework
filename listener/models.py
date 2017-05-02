@@ -1,6 +1,7 @@
 # App Imports
 import json
 import time
+from rule_engine.core import RedisEventHandler
 
 # Package Imports
 from model_utils.models import TimeStampedModel
@@ -59,7 +60,21 @@ class Event(AetosModel):
 
         instance = cls(**APIEventSerialiser(json_data).required_json)
         instance.save()
+
+        redis_event_handler = RedisEventHandler(instance)
+        redis_event_handler.entry_user_payment()
+
         return instance
+
+    @property
+    def event_json(self):
+        json_data = self.json_data['event_json']
+        json_data.update({'event_id': self.pk})
+        return json_data
+
+    @property
+    def json_data(self):
+        return json.loads(self.meta)
 
 
 class Location(AetosModel):

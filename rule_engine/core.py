@@ -1,5 +1,8 @@
 __author__ = 'ironeagle'
 
+# Package Imports
+from redis import Redis
+
 
 class Engine(object):
 
@@ -41,3 +44,47 @@ class Engine(object):
         print 'triggered "no_feedback"'
         print 'Config:'
         print self.config
+
+
+class DuplicateEntry(Exception):
+    pass
+
+
+class EmptyEntry(Exception):
+    pass
+
+
+class RedisEventHandler(object):
+
+    def __init__(self, event):
+        self.data = event.event_json
+        from rule_framework.settings import redis_pool
+        self.redis_conn = Redis(connection_pool=redis_pool)
+
+    def get_key(self, key):
+        return '%s_%s_%s' % (self._get_prefix('eventid', self.data['event_id']),
+                             self._get_prefix('userid', self.data['userid']), key)
+
+    def get_userid_key(self, key):
+        return '%s_%s' % (self._get_prefix('userid', self.data['userid']), key)
+
+    @staticmethod
+    def _get_prefix(key, value):
+        return '%s_%s' % (key, value)
+
+    def get_db_value(self, key):
+        return self.redis_conn.get(key)
+
+    def entry_user_payment(self):
+        total_amount = self.get_db_value(self.get_userid_key('total_amount'))
+        if total_amount:
+            total_amount = self.data['properties']['value'] + float(total_amount)
+        else:
+            total_amount = self.data['properties']['value']
+        keys = (
+            (self.get_key('amount'), self.data['properties']['value']),
+            (self.get_key('ts'), self.data['ts']),
+            (self.get_userid_key('total_amount'), total_amount),
+        )
+        for key in keys:
+            self.redis_conn.set(key[0], key[1])
